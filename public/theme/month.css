@@ -1,0 +1,15 @@
+:root {
+    /* font size */
+
+    /* font color style */
+
+    /* background color style */
+    --baseBgColor: blue;
+    --mainBgColoe: red;
+    --menuBgColor: blueviolet;
+    --selMenuBgColor: yellow;
+
+    /* height */
+    --headerHg: 64px;
+    --menuHg: 50px;
+}

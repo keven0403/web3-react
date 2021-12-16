@@ -1,0 +1,84 @@
+// layout menu
+.ant-layout-header {
+    padding: 0;
+}
+
+.ant-layout-sider {
+    background: var(--baseBgColor);
+}
+
+.ant-menu {
+    background: var(--baseBgColor);
+}
+
+.ant-menu-sub.ant-menu-inline {
+    background: var(--baseBgColor);
+}
+
+.ant-menu-root.ant-menu-inline {
+    border: none;
+}
+
+.ant-layout-content {
+    background: var(--mainBgColoe);
+    height: calc(100vh - var(--headerHg));
+}
+
+.ant-menu-inline .ant-menu-item {
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    height: var(--menuHg);
+    line-height: var(--menuHg);
+}
+
+.ant-menu-inline .ant-menu-item:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+    background-color: var(--selMenuBgColor);
+}
+
+.ant-menu-inline .ant-menu-item::after {
+    border-right: 3px solid var(--menuBgColor);
+}
+
+.ant-layout-header {
+    height: var(--headerHg);
+    background: var(--baseBgColor);
+}
+
+.ant-menu-sub.ant-menu-inline > .ant-menu-item {
+    height: var(--menuHg);
+    line-height: var(--menuHg);
+}
+
+//  horizontal menu
+.ant-menu-horizontal {
+    display: flex;
+    align-items: center;
+    height: var(--headerHg) !important;
+    line-height: var(--headerHg) !important;
+}
+
+.ant-menu-horizontal > .ant-menu-item {
+    position: relative !important;
+}
+
+.ant-menu-vertical {
+    border-right: none;
+}
+
+.ant-menu-submenu-popup > .ant-menu {
+    background: var(--baseBgColor);
+}
+
+.ant-menu-vertical .ant-menu-item {
+    margin: 0;
+}
+
+.ant-menu-horizontal {
+    border-bottom: none;
+}
