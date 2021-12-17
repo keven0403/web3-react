@@ -3,10 +3,12 @@ import { Modal } from "antd"
 import { useImperativeHandle, useState, useEffect } from "react"
 import { SUPPORTED_WALLETS } from "constants/wallet"
 import { connectorsByName } from 'connectors/NetworkConnector'
-import { useWeb3React } from '@web3-react/core'
-import { Web3Provider } from '@ethersproject/providers'
+import { useWeb3React, UnsupportedChainIdError } from '@web3-react/core'
 import { FormattedMessage } from 'react-intl'
 import { useEagerConnect, useInactiveListener } from 'hooks/triedEager'
+import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from '@web3-react/walletconnect-connector'
+import { UserRejectedRequestError as UserRejectedRequestErrorFrame } from '@web3-react/frame-connector'
+import { NoEthereumProviderError, UserRejectedRequestError as UserRejectedRequestErrorInjected } from '@web3-react/injected-connector'
 
 const ConectWalletModalBox = styled.div`
     box-sizing: border-box;
@@ -28,12 +30,17 @@ const WalletItem = styled.div`
         height: 30px;
     }
     .item {
+        cursor: pointer;
         flex: 1;
         padding: 20px;
         height: 50px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+    .disabled {
+        cursor: not-allowed;
+        opacity: .6;
     }
     .disconnect {
         justify-content: center;
@@ -49,12 +56,12 @@ const ItemName = styled.div`
 `
 
 const ConectWalletModal = (props:any) => {
-    const useWeb3ReactContext = useWeb3React<Web3Provider>()
-    const { connector, library, chainId, account, activate, deactivate, active, error } = useWeb3ReactContext
+    const { connector, library, chainId, account, activate, deactivate, active, error } = useWeb3React()
     const ethereum = (window as any).ethereum
     const [visible, setVisible] = useState(props.visible)
     const [walletOprions, setWalletOprions] = useState<any[]>([])
     const [activatingConnector, setActivatingConnector] = useState<any>()
+
     // handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
     const triedEager = useEagerConnect()
     // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
@@ -62,22 +69,16 @@ const ConectWalletModal = (props:any) => {
 
     console.log('connector==', connector)
     console.log('library==', library)
-    console.log(`chainId==${chainId}, account==${account}, active==${active}`)
-
-    if (connector === connectorsByName['WalletConnect']) {
-        console.log('WalletConnect fasfasdfsadfasdfasdfasdfasdf')
-    }
 
     useEffect(() => {
-        console.log('进来了')
         initData()
-        initConnector()
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useImperativeHandle(props.onRef, () => ({
         // onChild 就是暴露给父组件的方法
         updateData ({visible = false}) {
+            console.log('onChild 就是暴露给父组件的方法')
             setVisible(visible)
         }
     }))
@@ -102,21 +103,6 @@ const ConectWalletModal = (props:any) => {
         setWalletOprions(options)
     }
 
-    const initConnector = () => {
-        // console.log(`chainId==${chainId}, account==${account}, activate==${activate}, active==${active}`)
-        // console.log('initConnector activatingConnector=====', activatingConnector)
-        // if (activatingConnector && activatingConnector === connector) {
-        //     setActivatingConnector(undefined)
-        // } else {
-        //     const currentConnector = connectorsByName[name]
-        //     const activating = currentConnector === activatingConnector
-        //     const connected = currentConnector === connector
-        //     const disabled = !triedEager || !!activatingConnector || connected || !!error
-        //     setActivatingConnector(currentConnector)
-        //     activate(currentConnector)
-        // }
-    }
-
     const handleOk = () => {
         setVisible(false)
     }
@@ -134,8 +120,30 @@ const ConectWalletModal = (props:any) => {
     }
 
     const deactivateClick = () => {
-        deactivate()
-        setVisible(false)
+        if (connector === connectorsByName['WalletConnect']) {
+            (connector as any).close()
+        } else if (connector === connectorsByName['Injected']) {
+            deactivate()
+            setVisible(false)
+        }
+    }
+
+    const getErrorMessage = (error: Error) => {
+        let errorMsg:string = ''
+        if (error instanceof NoEthereumProviderError) {
+            errorMsg = 'No Ethereum browser extension detected, install MetaMask on desktop or visit from a dApp browser on mobile.'
+        } else if (error instanceof UnsupportedChainIdError) {
+            errorMsg = "You're connected to an unsupported network."
+        } else if (
+          error instanceof UserRejectedRequestErrorInjected ||
+          error instanceof UserRejectedRequestErrorWalletConnect ||
+          error instanceof UserRejectedRequestErrorFrame
+        ) {
+            errorMsg =  'Please authorize this website to access your Ethereum account.'
+        } else {
+          errorMsg =  'An unknown error occurred. Check the console for more details.'
+        }
+        return errorMsg
     }
 
     return (
@@ -149,19 +157,27 @@ const ConectWalletModal = (props:any) => {
             <ConectWalletModalBox>
                 {
                     walletOprions.map((item:any, index:number) => {
+                        item.disabled = false
+                        if (connector === connectorsByName[item.name]) {
+                            item.disabled = true || false
+                        } 
                         return (
                             <WalletItem key={index}>
                                 {
+
                                     item.link ?
                                     <a className="item" target="_blank" href={item.link} rel="noreferrer">
                                         <ItemName>{item.label}</ItemName>
                                         <img src={item.iconURL} alt="" />
                                     </a>
                                     :
-                                    <div onClick={() => selectWalletItemClick(item)} className="item" >
+                                    <button onClick={() => selectWalletItemClick(item)}
+                                        className={`item ${item.disabled ? 'disabled' : ''}`}
+                                        disabled={item.disabled}
+                                    >
                                         <ItemName>{item.label}</ItemName>
                                         <img src={item.iconURL} alt="" />
-                                    </div>
+                                    </button>
                                 }
                             </WalletItem>
                         )
@@ -177,6 +193,7 @@ const ConectWalletModal = (props:any) => {
                     :
                     ''
                 }
+                {!!error && <h4 style={{ marginTop: '1rem', marginBottom: '0' }}>{getErrorMessage(error)}</h4>}
             </ConectWalletModalBox>
         </Modal>
     )

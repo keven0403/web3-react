@@ -9,6 +9,7 @@ const zh = {
     'header.countries': '🇨🇳',
     'header.language': '中文',
     'header.connectwallet': '连接钱包',
+    'header.unsupported.network': '不支持当前网络',
 
     'connectmodel.disconnect': '断开连接'
 

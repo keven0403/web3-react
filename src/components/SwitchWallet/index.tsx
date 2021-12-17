@@ -21,7 +21,7 @@ const SwitchWalletBox = styled.div`
 const SwitchWallet = () => {
     const conectWalletModalRef:any = useRef()
     const useWeb3ReactContext = useWeb3React<Web3Provider>()
-    const { account } = useWeb3ReactContext
+    const { account, error } = useWeb3ReactContext
 
     const connectWalletClick = () => {
         console.log('connectWalletClick')
@@ -31,7 +31,9 @@ const SwitchWallet = () => {
     return (
         <div>
             <SwitchWalletBox onClick={connectWalletClick}>
-                {
+                {   !!error ?
+                    <FormattedMessage id="header.unsupported.network" defaultMessage="" values={{name: ''}} />
+                    :
                     account ?
                     `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
                     :

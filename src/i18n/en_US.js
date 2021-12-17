@@ -9,6 +9,7 @@ const en = {
     'header.countries': '🇺🇸',
     'header.language': 'English',
     'header.connectwallet': 'Connect wallet',
+    'header.unsupported.network': 'unsupported network',
 
     'connectmodel.disconnect': 'Disconnect'
 }

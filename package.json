@@ -2,7 +2,7 @@
   "name": "web3-react",
   "version": "0.1.0",
   "private": true,
-  "author": "kaiyang",
+  "author": "kaiyang 974745117@qq.com",
   "keywords": [
     "react",
     "react-hooks",
@@ -65,6 +65,9 @@
     "start": "craco start",
     "build": "craco build",
     "eject": "react-scripts eject"
+  },
+  "bin":{
+    "mycli":"./index.js"
   },
   "eslintConfig": {
     "extends": [
