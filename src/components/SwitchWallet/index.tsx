@@ -33,7 +33,7 @@ const SwitchWallet = () => {
             <SwitchWalletBox onClick={connectWalletClick}>
                 {
                     account ?
-                    <span>{account}</span>
+                    `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
                     :
                     <FormattedMessage id="header.connectwallet" defaultMessage="" values={{name: ''}} />
                 }
