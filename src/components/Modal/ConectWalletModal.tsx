@@ -56,7 +56,7 @@ const ItemName = styled.div`
 `
 
 const ConectWalletModal = (props:any) => {
-    const { connector, library, chainId, account, activate, deactivate, active, error } = useWeb3React()
+    const { connector, activate, deactivate, active, error } = useWeb3React()
     const ethereum = (window as any).ethereum
     const [visible, setVisible] = useState(props.visible)
     const [walletOprions, setWalletOprions] = useState<any[]>([])
@@ -66,9 +66,6 @@ const ConectWalletModal = (props:any) => {
     const triedEager = useEagerConnect()
     // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
     useInactiveListener(!triedEager || !!activatingConnector)
-
-    console.log('connector==', connector)
-    console.log('library==', library)
 
     useEffect(() => {
         initData()

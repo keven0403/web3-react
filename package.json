@@ -67,7 +67,7 @@
     "eject": "react-scripts eject"
   },
   "bin":{
-    "mycli":"./index.js"
+    "kai-yang-web3-react-cli":"./bin/index.js"
   },
   "eslintConfig": {
     "extends": [
